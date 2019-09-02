@@ -29,3 +29,8 @@ if message.channel.name == "끝말잇기":
                         "user": message.author.name,
 ...
 ```
+
+
+## 원본 소스 (Python CLI)
+
+https://m.blog.naver.com/njw1204/221364710539
