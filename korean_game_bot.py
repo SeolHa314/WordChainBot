@@ -78,6 +78,16 @@ async def on_message(message):
             await channel.send("", embed=embed)
     else:
         if message.channel.name == "끝말잇기":
+            if not (str(message.author.id) in user_card):
+                user_card[str(message.author.id)] = {
+                    "user": message.author.name,
+                    "level": 1,
+                    "word": 0,
+                    "win": 0
+                }
+            with open('user_info.json', 'w', encoding='utf-8') as file:
+                file.write(json.dumps(user_card, ensure_ascii=False, indent=4))
+                
             if ('!start' == message.content or '!시작' == message.content) and (not isPlaying):
                 round += 1
                 if not (str(message.author.id) in user_card):
