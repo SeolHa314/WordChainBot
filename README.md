@@ -27,11 +27,11 @@ for i in wordDict:
 ```python
 ...
 if message.channel.name == "끝말잇기":
-            if ('!start' == message.content or '!시작' == message.content) and (not isPlaying):
-                round += 1
-                if not (str(message.author.id) in user_card):
-                    user_card[str(message.author.id)] = {
-                        "user": message.author.name,
+    if ('!start' == message.content or '!시작' == message.content) and (not isPlaying):
+        round += 1
+        if not (str(message.author.id) in user_card):
+            user_card[str(message.author.id)] = {
+                "user": message.author.name,
 ...
 ```
 
