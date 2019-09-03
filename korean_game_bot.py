@@ -5,7 +5,7 @@ import json
 
 client = discord.Client()
 
-with open('dict.txt', 'rt', encoding='utf-8') as f:
+with open('kkutu.txt', 'rt', encoding='utf-8') as f:
     s = f.read()
 
 with open('user_info.json', 'r', encoding='utf-8') as file:
@@ -42,6 +42,10 @@ round, win, lose = 0, 0, 0
 who, lastWord, firstLetter = "CPU", '', ''
 firstTurn, resetRound, isPlaying = True, False, False
 
+def patch_data(dict, null_name, null_data):
+    if not (null_name in dict):
+        dict[null_name] = null_data
+
 @client.event
 async def on_message(message):
     global isPlaying, round, win, lose, firstLetter
@@ -66,7 +70,8 @@ async def on_message(message):
                     "user": message.author.name,
                     "level": 1,
                     "word": 0,
-                    "win": 0
+                    "win": 0,
+                    "length": 0
                 }
             with open('user_info.json', 'w', encoding='utf-8') as file:
                 file.write(json.dumps(user_card, ensure_ascii=False, indent=4))
@@ -75,19 +80,25 @@ async def on_message(message):
             embed.add_field(name="레벨", value=str(user_card[str(message.author.id)]["level"]), inline=True)
             embed.add_field(name="승리", value=str(user_card[str(message.author.id)]["win"]), inline=True)
             embed.add_field(name="단어", value=str(user_card[str(message.author.id)]["word"]), inline=True)
+            embed.add_field(name="글자", value=str(user_card[str(message.author.id)]["length"]), inline=True)
             await channel.send("", embed=embed)
     else:
         if message.channel.name == "끝말잇기":
+
             if not (str(message.author.id) in user_card):
                 user_card[str(message.author.id)] = {
                     "user": message.author.name,
                     "level": 1,
                     "word": 0,
-                    "win": 0
+                    "win": 0,
+                    "length": 0
                 }
+            else:
+                patch_data(user_card[str(message.author.id)], "length", 0)
+
             with open('user_info.json', 'w', encoding='utf-8') as file:
                 file.write(json.dumps(user_card, ensure_ascii=False, indent=4))
-                
+
             if ('!start' == message.content or '!시작' == message.content) and (not isPlaying):
                 round += 1
                 if not (str(message.author.id) in user_card):
@@ -151,6 +162,7 @@ async def on_message(message):
                     alreadySet.add(yourWord)
                     lastWord = yourWord
                     user_card[str(message.author.id)]["word"] += 1
+                    user_card[str(message.author.id)]["length"] += len(yourWord)
                     with open('user_info.json', 'w', encoding='utf-8') as file:
                         file.write(json.dumps(user_card, ensure_ascii=False, indent=4))
                     firstLetter = lastWord[-1]
