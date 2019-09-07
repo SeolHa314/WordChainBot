@@ -46,6 +46,39 @@ def patch_data(dict, null_name, null_data):
     if not (null_name in dict):
         dict[null_name] = null_data
 
+def decompositeHangul(hangulLetter):
+    cho_list = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ'
+    jung_list = 'ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ'
+    jong_list = ' ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ'
+
+    hangulCode = ord(hangulLetter)
+    cho_index = (hangulCode - 0xAC00) // 21 // 28
+    jung_index = (hangulCode - 0xAC00 - (cho_index * 21 * 28)) // 28
+    jong_index = hangulCode - 0xAC00 -(cho_index * 21 * 28) - (jung_index * 28)
+    return (cho_list[cho_index], jung_list[jung_index], jong_list[jong_index])
+
+def checkDueum(last_lastWord, first_yourWord):
+    hangulRegex = re.compile("[가-힣]")
+    if not pat.match(last_lastWord) and not pat.match(first_yourWord):
+        return False
+
+    lastWordDecompose = decompositeHangul(last_lastWord)
+    yourWordDecompose = decompositeHangul(first_yourWord)
+
+    if lastWordDecompose[0] in 'ㄴㄹ':
+        if (lastWordDecompose[1] in 'ㅏㅐㅗㅚㅜㅡ') and lastWordDecompose[0] == 'ㄹ':
+            if (yourWordDecompose[1:] == lastWordDecompose[1:]) and yourWordDecompose[0] == 'ㄴ':
+                return True
+            else:
+                return False
+        elif lastWordDecompose[1] in 'ㅑㅕㅛㅠㅣ':
+            if (yourWordDecompose[1:] == lastWordDecompose[1:]) and yourWordDecompose[0] == 'ㅇ':
+                return True
+            else:
+                return False
+    else:
+        return False
+
 @client.event
 async def on_message(message):
     global isPlaying, round, win, lose, firstLetter
@@ -140,7 +173,7 @@ async def on_message(message):
                 error = False
 
                 firstLetter = yourWord[0]
-                if firstLetter != lastWord[-1]:
+                if (firstLetter != lastWord[-1]) or not checkDueum(lastWord[-1], firstLetter):
                     await channel.send(" [오류] '" + lastWord[-1] + "' (으)로 시작하는 단어를 입력하세요.")
                     who = 'USER'
                     error = True
