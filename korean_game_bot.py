@@ -55,6 +55,7 @@ def decompositeHangul(hangulLetter):
     cho_index = (hangulCode - 0xAC00) // 21 // 28
     jung_index = (hangulCode - 0xAC00 - (cho_index * 21 * 28)) // 28
     jong_index = hangulCode - 0xAC00 -(cho_index * 21 * 28) - (jung_index * 28)
+    
     return (cho_list[cho_index], jung_list[jung_index], jong_list[jong_index])
 
 def checkDueum(last_lastWord, first_yourWord):
