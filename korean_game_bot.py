@@ -173,7 +173,7 @@ async def on_message(message):
                 error = False
 
                 firstLetter = yourWord[0]
-                if (firstLetter != lastWord[-1]) or not checkDueum(lastWord[-1], firstLetter):
+                if (firstLetter != lastWord[-1]) and not checkDueum(lastWord[-1], firstLetter):
                     await channel.send(" [오류] '" + lastWord[-1] + "' (으)로 시작하는 단어를 입력하세요.")
                     who = 'USER'
                     error = True
